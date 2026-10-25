@@ -25,6 +25,8 @@ export default defineConfig({
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
+    locale: 'es-ES', // o 'es-AR'
+    
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
 
@@ -39,6 +41,16 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
+   {
+      name: 'brave',
+      use: { 
+        ...devices['Desktop Chrome'],
+        launchOptions: {
+          executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe'
+        }
+      },
+    },
+    
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
