@@ -1,34 +1,32 @@
 import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
+import { HomePage } from '../pages/HomePage';
+import { ProductPage } from '../pages/ProductPage';
 
-test.describe('ToolShop - Flujo E2E de Compra de Principio', () => {
+const Combination_Pliers = 'Combination Pliers'; // poné el nombre del producto que elegiste
 
-  test('Proceso completo de compra en un solo flujo monolítico', async ({ page }) => {
+test('Compra: agregar un producto al carrito', async ({ page }) => {
+  const loginPage = new LoginPage(page);
+  const homePage = new HomePage(page);
+  const productPage = new ProductPage(page);
 
-    const loginPage = new LoginPage(page);
-
-    await test.step('Abrir la página de inicio', async () => {
+  await test.step('Iniciar sesión', async () => {
     await loginPage.goto();
-    await expect(page).toHaveURL('/');
-    });
+    await loginPage.openLoginForm();
+    await loginPage.login('admin@practicesoftwaretesting.com', 'welcome01');
+    await expect(page).toHaveURL(/.*dashboard/);
+  });
 
+  await test.step('Volver a la pantalla de inicio', async () => {
+    await homePage.goToHome();
+  });
 
+  await test.step('Abrir el producto', async () => {
+    await homePage.openProduct(Combination_Pliers);
+  });
 
-    await test.step('Paso 2: Iniciar sesión con credenciales válidas', async () => {
-      await loginPage.openLoginForm();
-      await loginPage.login('admin@practicesoftwaretesting.com', 'welcome01');
-      await expect(page).toHaveURL(/.*dashboard/);
-      await expect(page.locator('[data-test="page-title"]')).toHaveText('Sales over the years');
-      await expect(page.locator('app-dashboard')).toBeVisible();
-      await expect(page.getByText('INV-').first()).toBeVisible();
-    });
-
-    await test.step('Paso 3: Categorías', async () => {
-      await page.locator('[data-test="nav-categories"]').click();
-      await page.locator('[data-test="nav-hand-tools"]').click();
-      await expect(page).toHaveURL(/.*category\/hand-tools/);
-      await expect(page.locator('[data-test="page-title"]')).toHaveText('Categoría: Hand Tools');
-    });
+  await test.step('Subir la cantidad y agregar al carrito', async () => {
+    await productPage.addToCart();
+    await productPage.expectAddedToCart();
   });
 });
-
